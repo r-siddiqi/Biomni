@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 def predict_protein_disorder_regions(protein_sequence, threshold=0.5, output_file="disorder_prediction_results.csv"):
     """Predicts intrinsically disordered regions (IDRs) in a protein sequence using IUPred2A.
 
@@ -593,10 +595,6 @@ def _initial_guesses(t: np.ndarray, F: np.ndarray) -> dict[str, float]:
     return {"F0": F0, "Mf": Mf, "tau": t_half, "plateau": plateau, "t_half": t_half}
 
 
-# ---------------------------------------------------------------------------
-# Tool 1: image stack -> normalized recovery curve
-# ---------------------------------------------------------------------------
-
 def extract_frap_curve_from_image_stack(
     image_stack_path: str,
     bleach_roi: list,
@@ -735,10 +733,6 @@ def extract_frap_curve_from_image_stack(
 
     return "\n".join(log)
 
-
-# ---------------------------------------------------------------------------
-# Tool 2: fit a recovery curve
-# ---------------------------------------------------------------------------
 
 def fit_frap_recovery_curve(
     curve_csv_path: str,
@@ -959,10 +953,6 @@ def fit_frap_recovery_curve(
     return "\n".join(log)
 
 
-# ---------------------------------------------------------------------------
-# Tool 3: classify material state
-# ---------------------------------------------------------------------------
-
 def classify_condensate_material_state(
     fit_parameters_json: str,
     output_folder: str = "./tmp/",
@@ -1083,10 +1073,6 @@ def classify_condensate_material_state(
 
     return "\n".join(log)
 
-
-# ---------------------------------------------------------------------------
-# Tool 4: end-to-end pipeline
-# ---------------------------------------------------------------------------
 
 def run_frap_analysis_pipeline(
     image_stack_path: str,
