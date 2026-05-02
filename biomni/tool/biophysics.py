@@ -936,7 +936,7 @@ def classify_condensate_material_state(
     fit_parameters_json: str,
     output_folder: str = "./tmp/",
     use_llm_interpretation: bool = False,
-    llm: str = "claude-sonnet-4-20250514",
+    llm: str = "claude-sonnet-4-5",
     context_note: str = "",
 ) -> str:
     """Classify FRAP fit parameters into liquid / gel-like / arrested.
@@ -1064,7 +1064,7 @@ def run_frap_analysis_pipeline(
     frame_interval_s: float = 1.0,
     fit_model: str = "soumpasis",
     use_llm_interpretation: bool = False,
-    llm: str = "claude-sonnet-4-20250514",
+    llm: str = "claude-sonnet-4-5",
     context_note: str = "",
     output_folder: str = "./tmp/",
 ) -> str:

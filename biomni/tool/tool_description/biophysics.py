@@ -216,7 +216,7 @@ description = [
             {
                 "name": "llm",
                 "type": "str",
-                "default": "claude-sonnet-4-20250514",
+                "default": "claude-sonnet-4-5",
                 "description": "Model identifier passed to biomni.llm.get_llm when use_llm_interpretation=True.",
             },
             {
@@ -301,7 +301,7 @@ description = [
             {
                 "name": "llm",
                 "type": "str",
-                "default": "claude-sonnet-4-20250514",
+                "default": "claude-sonnet-4-5",
                 "description": "LLM identifier when use_llm_interpretation=True.",
             },
             {
