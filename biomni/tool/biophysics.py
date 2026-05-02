@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+
 def predict_protein_disorder_regions(protein_sequence, threshold=0.5, output_file="disorder_prediction_results.csv"):
     """Predicts intrinsically disordered regions (IDRs) in a protein sequence using IUPred2A.
 
@@ -514,8 +515,6 @@ def analyze_tissue_deformation_flow(image_sequence, output_dir="results", pixel_
 
     return log
 
-    from __future__ import annotations
-
 
 # ---------------------------------------------------------------------------
 # Internal helpers for FRAP condensate analysis
@@ -526,10 +525,11 @@ from typing import Any
 
 import numpy as np
 
+
 def _circular_mask(shape: tuple[int, int], cx: float, cy: float, r: float) -> np.ndarray:
     """Boolean mask for a circular ROI centered at (cx, cy) with radius r."""
     Y, X = np.ogrid[: shape[0], : shape[1]]
-    return (X - cx) ** 2 + (Y - cy) ** 2 <= r ** 2
+    return (X - cx) ** 2 + (Y - cy) ** 2 <= r**2
 
 
 def _soumpasis_recovery(t, F0, Mf, tau_D):
@@ -657,9 +657,7 @@ def extract_frap_curve_from_image_stack(
     if not (0 <= cx < nx and 0 <= cy < ny and r > 0):
         return f"ERROR: bleach_roi {bleach_roi} out of image bounds {(nx, ny)}."
     bleach_mask = _circular_mask((ny, nx), cx, cy, r)
-    log.append(
-        f"Bleach ROI: center=({cx}, {cy}), radius={r} px, area={int(bleach_mask.sum())} px."
-    )
+    log.append(f"Bleach ROI: center=({cx}, {cy}), radius={r} px, area={int(bleach_mask.sum())} px.")
 
     bleach_intensity = np.array([frame[bleach_mask].mean() for frame in stack], dtype=float)
     raw_bleach = bleach_intensity.copy()
@@ -686,10 +684,7 @@ def extract_frap_curve_from_image_stack(
         log.append(f"Auto-detected bleach frame index: {bleach_frame_index}.")
 
     if not (1 <= bleach_frame_index < n_frames):
-        return (
-            f"ERROR: bleach_frame_index={bleach_frame_index} out of range "
-            f"for {n_frames}-frame stack."
-        )
+        return f"ERROR: bleach_frame_index={bleach_frame_index} out of range for {n_frames}-frame stack."
 
     pre_bleach_mean = float(np.mean(bleach_intensity[:bleach_frame_index]))
     if pre_bleach_mean <= 0:
@@ -703,8 +698,7 @@ def extract_frap_curve_from_image_stack(
     F0 = float(intensity_norm[bleach_frame_index])
     if F0 > 0.95:
         log.append(
-            f"WARNING: post-bleach intensity is {F0:.3f} (≥ 0.95). "
-            "Bleach event may not have been detected correctly."
+            f"WARNING: post-bleach intensity is {F0:.3f} (≥ 0.95). Bleach event may not have been detected correctly."
         )
 
     import pandas as pd
@@ -763,9 +757,9 @@ def fit_frap_recovery_curve(
     os.makedirs(output_folder, exist_ok=True)
 
     try:
+        import matplotlib
         import pandas as pd
         from scipy.optimize import curve_fit
-        import matplotlib
 
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
@@ -800,12 +794,10 @@ def fit_frap_recovery_curve(
         if fit_model == "soumpasis":
             p0 = (initial_guess or {}).get("p0") or [g["F0"], g["Mf"], g["t_half"]]
             bounds = ([0.0, 0.0, 1e-6], [1.0, 1.5, np.inf])
-            popt, pcov = curve_fit(
-                _soumpasis_recovery, t, F, p0=p0, bounds=bounds, maxfev=20000
-            )
+            popt, pcov = curve_fit(_soumpasis_recovery, t, F, p0=p0, bounds=bounds, maxfev=20000)
             F0_fit, Mf_fit, tau_D_fit = popt
             perr = np.sqrt(np.diag(pcov)) * 1.96
-            D_fit = (bleach_radius_um ** 2) / (4.0 * tau_D_fit)
+            D_fit = (bleach_radius_um**2) / (4.0 * tau_D_fit)
             t_half = _solve_t_half_soumpasis(tau_D_fit)
             params.update(
                 F0=float(F0_fit),
@@ -822,9 +814,7 @@ def fit_frap_recovery_curve(
         elif fit_model == "exponential":
             p0 = (initial_guess or {}).get("p0") or [g["F0"], g["Mf"], g["tau"]]
             bounds = ([0.0, 0.0, 1e-6], [1.0, 1.5, np.inf])
-            popt, pcov = curve_fit(
-                _exponential_recovery, t, F, p0=p0, bounds=bounds, maxfev=20000
-            )
+            popt, pcov = curve_fit(_exponential_recovery, t, F, p0=p0, bounds=bounds, maxfev=20000)
             F0_fit, Mf_fit, tau_fit = popt
             perr = np.sqrt(np.diag(pcov)) * 1.96
             params.update(
@@ -848,9 +838,7 @@ def fit_frap_recovery_curve(
                 max(g["tau"] * 3.0, 1e-2),
             ]
             bounds = ([0.0, 0.0, 1e-6, 0.0, 1e-6], [1.0, 1.0, np.inf, 1.0, np.inf])
-            popt, pcov = curve_fit(
-                _double_exponential_recovery, t, F, p0=p0, bounds=bounds, maxfev=20000
-            )
+            popt, pcov = curve_fit(_double_exponential_recovery, t, F, p0=p0, bounds=bounds, maxfev=20000)
             F0_fit, A1, tau1, A2, tau2 = popt
             # Enforce tau1 < tau2 for reportability.
             if tau1 > tau2:
@@ -870,8 +858,7 @@ def fit_frap_recovery_curve(
 
         else:
             return (
-                f"ERROR: unknown fit_model '{fit_model}'. "
-                "Choose 'soumpasis', 'exponential', or 'double_exponential'."
+                f"ERROR: unknown fit_model '{fit_model}'. Choose 'soumpasis', 'exponential', or 'double_exponential'."
             )
 
     except Exception as exc:
@@ -926,11 +913,7 @@ def fit_frap_recovery_curve(
     if "mobile_fraction" in params:
         log.append(
             f"Mobile fraction: {params['mobile_fraction']:.3f}"
-            + (
-                f" (95% CI ± {params['mobile_fraction_ci95']:.3f})"
-                if "mobile_fraction_ci95" in params
-                else ""
-            )
+            + (f" (95% CI ± {params['mobile_fraction_ci95']:.3f})" if "mobile_fraction_ci95" in params else "")
         )
     if "t_half_s" in params:
         log.append(f"t-half: {params['t_half_s']:.2f} s.")
@@ -940,12 +923,8 @@ def fit_frap_recovery_curve(
             f"(from bleach radius {bleach_radius_um} µm and τ_D {params['tau_D_s']:.3f} s)."
         )
     if fit_model == "double_exponential":
-        log.append(
-            f"Fast component: A={params['amplitude_fast']:.3f}, τ={params['tau_fast_s']:.2f} s."
-        )
-        log.append(
-            f"Slow component: A={params['amplitude_slow']:.3f}, τ={params['tau_slow_s']:.2f} s."
-        )
+        log.append(f"Fast component: A={params['amplitude_fast']:.3f}, τ={params['tau_fast_s']:.2f} s.")
+        log.append(f"Slow component: A={params['amplitude_slow']:.3f}, τ={params['tau_slow_s']:.2f} s.")
     log.append(f"R² = {r_squared:.4f}, RMSE = {rmse:.4f}.")
     log.append(f"Wrote fit parameters to {params_path}.")
     log.append(f"Wrote fit plot to {plot_path}.")
@@ -1078,7 +1057,7 @@ def run_frap_analysis_pipeline(
     image_stack_path: str,
     bleach_roi: list,
     bleach_radius_um: float,
-    pixel_size_um: float = None,  # noqa: ARG001 - reserved for future ROI conversion
+    pixel_size_um: float = None,
     reference_roi: list = None,
     background_roi: list = None,
     bleach_frame_index: int = None,
@@ -1190,4 +1169,3 @@ def run_frap_analysis_pipeline(
     log.append(f"\nWrote summary report to {report_path}.")
 
     return "\n".join(log)
-
